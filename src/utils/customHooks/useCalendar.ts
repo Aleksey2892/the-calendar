@@ -22,7 +22,7 @@ export const useCalendar = () => {
     } while (!initialDay.isSame(endDay, 'day'))
 
     return monthCalendar.splice(0, 42).map(day => {
-      return { id: day.format('DD-MM-YY'), originalMoment: day, tasks: [] }
+      return { id: day.format('DD-MM-YY'), originalMoment: day }
     })
   }
 

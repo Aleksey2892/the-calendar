@@ -15,12 +15,17 @@ type Task = { id: string; text: string }
 type Day = {
   id: string
   originalMoment: moment.Moment
+}
+
+type DaysWithTasks = {
+  id: string
   tasks: Task[]
 }
 
 export const Calendar = () => {
   const [today, setToday] = useState(moment())
   const [monthDays, setMonthDays] = useState<Day[]>([])
+  const [daysWithTasks, setDaysWithTasks] = useState<DaysWithTasks[]>([])
   const { makeMonthCalendar, isCurrentDay, isCurrentMonth } = useCalendar()
 
   useEffect(() => {
@@ -28,18 +33,22 @@ export const Calendar = () => {
   }, [today])
 
   const handleMakeNewTask = (dayId: string) => {
-    setMonthDays(prev => {
-      const updated = prev.map(d => {
+    // @ts-ignore
+    setDaysWithTasks(prev => {
+      const foundDay = prev.find(d => d.id === dayId)
+      if (!foundDay) {
+        const newDay = { id: dayId, tasks: [{ id: `${dayId}/0`, text: '' }] }
+        return [newDay]
+      }
+
+      return prev.map(d => {
         if (d.id === dayId) {
-          d.tasks.push({
-            id: `${d.originalMoment.format('DD-MM-YY')}/${d.tasks.length}`,
-            text: '',
-          })
+          const newTask: Task = { id: `${dayId}/${prev.length}`, text: '' }
+
+          return { ...d, tasks: [...d.tasks, newTask] }
         }
         return d
       })
-
-      return [...updated]
     })
   }
 
@@ -47,21 +56,21 @@ export const Calendar = () => {
     console.log(value)
     console.log(taskId)
 
-    const dayId = taskId.split('/').shift()
-
-    setMonthDays(prev => {
-      return prev.map(d => {
-        if (d.id !== dayId) return d
-
-        const updatedTasks = d.tasks.map(t => {
-          if (t.id !== taskId) return t
-
-          return { ...t, text: value }
-        })
-
-        return { ...d, tasks: updatedTasks }
-      })
-    })
+    // const dayId = taskId.split('/').shift()
+    //
+    // setMonthDays(prev => {
+    //   return prev.map(d => {
+    //     if (d.id !== dayId) return d
+    //
+    //     const updatedTasks = d.tasks.map(t => {
+    //       if (t.id !== taskId) return t
+    //
+    //       return { ...t, text: value }
+    //     })
+    //
+    //     return { ...d, tasks: updatedTasks }
+    //   })
+    // })
   }
 
   // const monthDays = makeMonthCalendar(today)
@@ -72,7 +81,7 @@ export const Calendar = () => {
       <CalendarHeader changeMonth={setToday} currentMonth={currentMonth} />
 
       <BoxList>
-        {monthDays?.map(({ originalMoment, tasks }) => {
+        {monthDays?.map(({ originalMoment }) => {
           const normalizedDayNumber = originalMoment.format('D')
           const slicedMonthName = currentMonth.slice(0, 3)
           const formattedDate = originalMoment.format('DD-MM-YY')
@@ -101,13 +110,20 @@ export const Calendar = () => {
               </FirstLine>
 
               <ul>
-                {tasks.map(task => (
-                  <input
-                    type={'text'}
-                    value={''}
-                    onChange={e => handleChangeTask(e.target.value, task.id)}
-                  />
-                ))}
+                {daysWithTasks.map(task => {
+                  if (formattedDate === task.id) {
+                    return (
+                      <input
+                        type={'text'}
+                        value={''}
+                        onChange={e =>
+                          handleChangeTask(e.target.value, task.id)
+                        }
+                      />
+                    )
+                  }
+                  return null
+                })}
               </ul>
             </CellBox>
           )
