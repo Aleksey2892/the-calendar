@@ -27,7 +27,13 @@ const CellBox = styled.li<{ isWeekend: boolean }>`
   color: #fff;
 `
 
-const NumberLine = styled.p<{ isCurrentDay: boolean; isCurrentMonth: boolean }>`
+const FirstLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+`
+
+const DayNumber = styled.p<{ isCurrentDay: boolean; isCurrentMonth: boolean }>`
   margin: 0;
   width: max-content;
   padding: 5px;
@@ -40,4 +46,4 @@ const NumberLine = styled.p<{ isCurrentDay: boolean; isCurrentMonth: boolean }>`
   background-color: ${props => props.isCurrentDay && '#FF5446FF'};
 `
 
-export { CalendarWrapper, BoxList, CellBox, NumberLine }
+export { CalendarWrapper, BoxList, CellBox, FirstLine, DayNumber }
