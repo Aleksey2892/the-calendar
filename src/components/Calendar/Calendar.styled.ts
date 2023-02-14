@@ -36,6 +36,35 @@ const CellBox = styled.li<{ isWeekend: boolean }>`
   }
 `
 
+const ColorsList = styled.ul`
+  margin: 3px 0 5px;
+  padding: 0;
+  display: flex;
+  justify-content: space-around;
+  list-style: none;
+
+  li {
+    width: 15px;
+    height: 15px;
+    background: red;
+    border-radius: 50%;
+    cursor: pointer;
+
+    &:nth-child(1) {
+      background: #8c5e19;
+    }
+    &:nth-child(2) {
+      background: #631553;
+    }
+    &:nth-child(3) {
+      background: #152a63;
+    }
+    &:nth-child(4) {
+      background: #4f3e3e;
+    }
+  }
+`
+
 const FirstLine = styled.div`
   margin-bottom: 3px;
   display: flex;
@@ -48,6 +77,11 @@ const FirstLine = styled.div`
     color: #fff;
     font-weight: bold;
     background-color: gray;
+
+    &:hover {
+      border: 1px solid #3f0707ff;
+      background-color: #502d24;
+    }
   }
 `
 const HolidayList = styled.ul`
@@ -97,6 +131,11 @@ const TasksList = styled.ul`
       color: #fff;
       border: 1px solid #796d6d;
       background-color: #4f3e3e;
+
+      &:hover {
+        border: 1px solid #3f0707ff;
+        background-color: #502d24;
+      }
     }
   }
 `
@@ -108,7 +147,7 @@ const StyledInput = styled.input`
   text-align: center;
   border: none;
   border-bottom: 1px solid #282727;
-  background-color: #4f3e3e;
+  background-color: ${props => props.color};
 `
 
 export {
@@ -116,6 +155,7 @@ export {
   BoxList,
   CellBox,
   FirstLine,
+  ColorsList,
   HolidayList,
   DayNumber,
   TasksList,

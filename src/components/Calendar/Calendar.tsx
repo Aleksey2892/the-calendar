@@ -9,13 +9,18 @@ import {
   CellBox,
   DayNumber,
   FirstLine,
+  ColorsList,
   HolidayList,
   TasksList,
   StyledInput,
 } from './Calendar.styled'
 import { TypeHolidays } from '../../services/API'
 
-type Task = { id: string; text: string }
+type Task = {
+  id: string
+  text: string
+  color: string
+}
 
 type Day = {
   id: string
@@ -33,6 +38,8 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
   const [daysWithTasks, setDaysWithTasks] = useState<DaysWithTasks[]>([])
   const [dragDay, setDragDay] = useState<DaysWithTasks | any>(null)
   const [dragTask, setDragTask] = useState<Task | any>(null)
+  const [searchInputValue, setSearchInputValue] = useState<string>('')
+  const [isShowColors, setIsShowColors] = useState({ show: false, day: '' })
   const { makeMonthCalendar, isCurrentDay, isCurrentMonth } = useCalendar()
 
   useEffect(() => {
@@ -49,12 +56,33 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
     setDaysWithTasks(prev => [...prev, ...templates])
   }, [monthDays])
 
-  const handleMakeNewTask = (dayID: string) => {
+  useEffect(() => {
+    if (!searchInputValue) {
+      return
+    }
+
+    const result: Task[] = []
+    daysWithTasks.forEach(day => {
+      day.tasks.forEach(task => {
+        if (task.text.includes(searchInputValue)) {
+          result.push(task)
+        }
+      })
+    })
+
+    if (result.length) {
+      setToday(moment(result[0].id.split('/').shift(), 'DD-MM-YY'))
+    }
+
+    // eslint-disable-next-line
+  }, [searchInputValue])
+
+  const handleMakeNewTask = (dayID: string, color: string) => {
     const foundDay = daysWithTasks.find(d => d.id === dayID)
     if (!foundDay) {
       const newDay = {
         id: dayID,
-        tasks: [{ id: `${dayID}/${nanoid(6)}`, text: '' }],
+        tasks: [{ id: `${dayID}/${nanoid(6)}`, text: '', color }],
       }
       return setDaysWithTasks(prev => [...prev, newDay])
     }
@@ -63,10 +91,15 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
       return prev.map(d => {
         if (d.id !== dayID) return d
 
-        const newTask = { id: `${dayID}/${nanoid(6)}`, text: '' }
+        const newTask = { id: `${dayID}/${nanoid(6)}`, text: '', color }
         return { ...d, tasks: [...d.tasks, newTask] }
       })
     })
+
+    setIsShowColors(prev => ({
+      show: !prev.show,
+      day: '',
+    }))
   }
 
   const handleChangeTask = (text: string, dayID: string, taskID: string) => {
@@ -174,7 +207,11 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
 
   return (
     <CalendarWrapper>
-      <CalendarHeader changeMonth={setToday} currentMonth={currentMonth} />
+      <CalendarHeader
+        changeMonth={setToday}
+        findAction={{ value: searchInputValue, onChange: setSearchInputValue }}
+        currentMonth={currentMonth}
+      />
 
       <BoxList>
         {monthDays?.map(({ id, originalMoment }) => {
@@ -203,9 +240,41 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
                   {normalizedDayNumber} {isFirstDayOfMonth && slicedMonthName}
                 </DayNumber>
 
-                <button onClick={() => handleMakeNewTask(formattedDate)}>
+                <button
+                  onClick={() =>
+                    setIsShowColors(prev => ({
+                      day: formattedDate,
+                      show: !prev.show,
+                    }))
+                  }
+                >
                   +
                 </button>
+
+                {isShowColors.show && formattedDate === isShowColors.day && (
+                  <ColorsList>
+                    <li
+                      onClick={() =>
+                        handleMakeNewTask(formattedDate, '#8c5e19')
+                      }
+                    />
+                    <li
+                      onClick={() =>
+                        handleMakeNewTask(formattedDate, '#631553')
+                      }
+                    />
+                    <li
+                      onClick={() =>
+                        handleMakeNewTask(formattedDate, '#152a63')
+                      }
+                    />
+                    <li
+                      onClick={() =>
+                        handleMakeNewTask(formattedDate, '#4f3e3e')
+                      }
+                    />
+                  </ColorsList>
+                )}
               </FirstLine>
 
               <HolidayList>
@@ -237,6 +306,7 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
                         onChange={e =>
                           handleChangeTask(e.target.value, id, t.id)
                         }
+                        color={t.color}
                         className={'event-item'}
                         draggable
                         onDragOver={e => handleDragOver(e)}

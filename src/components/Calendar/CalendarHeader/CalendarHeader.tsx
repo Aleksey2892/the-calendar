@@ -47,18 +47,28 @@ const Container = styled.div`
 
 const ControlsBox = styled.div`
   button {
-    border: none;
+    border: 1px solid transparent;
     border-radius: 5px;
     background-color: #635a57ff;
+
+    &:hover {
+      border: 1px solid #3f0707ff;
+      background-color: #502d24;
+    }
   }
 `
 
 export const CalendarHeader = ({
   currentMonth,
   changeMonth,
+  findAction,
 }: {
   currentMonth: string
   changeMonth: React.Dispatch<React.SetStateAction<moment.Moment>>
+  findAction: {
+    value: string
+    onChange: React.Dispatch<React.SetStateAction<string>>
+  }
 }) => {
   const { changeCalendar } = useCalendar()
 
@@ -72,6 +82,12 @@ export const CalendarHeader = ({
     <Container>
       <div>
         <p>{currentMonth}</p>
+        <input
+          placeholder={'Find notes'}
+          type="text"
+          value={findAction.value}
+          onChange={e => findAction.onChange(e.target.value)}
+        />
 
         <ControlsBox>
           <button

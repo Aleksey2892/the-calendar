@@ -19,12 +19,18 @@ const ControlButtonBox = styled.div`
   margin-top: 20px;
 
   button {
-    padding: 5px;
+    padding: 7px;
     border-radius: 5px;
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
-    font-weight: bold;
+    color: #fff;
     background-color: #635a57ff;
+
+    &:hover {
+      color: #635a57ff;
+      background-color: #fff;
+      border: 1px solid #000000ff;
+    }
   }
 `
 
