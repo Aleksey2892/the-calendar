@@ -25,6 +25,15 @@ const CellBox = styled.li<{ isWeekend: boolean }>`
   min-height: 100px;
   background-color: ${props => (props.isWeekend ? '#312A27FF' : '#2E221EFF')};
   color: #fff;
+
+  div button {
+    visibility: hidden;
+    cursor: pointer;
+  }
+
+  &:hover button {
+    visibility: visible;
+  }
 `
 
 const FirstLine = styled.div`
@@ -46,4 +55,31 @@ const DayNumber = styled.p<{ isCurrentDay: boolean; isCurrentMonth: boolean }>`
   background-color: ${props => props.isCurrentDay && '#FF5446FF'};
 `
 
-export { CalendarWrapper, BoxList, CellBox, FirstLine, DayNumber }
+const TasksList = styled.ul`
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+
+    button {
+      cursor: pointer;
+    }
+  }
+`
+
+const StyledInput = styled.input`
+  width: 100%;
+  cursor: grab;
+`
+
+export {
+  CalendarWrapper,
+  BoxList,
+  CellBox,
+  FirstLine,
+  DayNumber,
+  TasksList,
+  StyledInput,
+}

@@ -39,8 +39,6 @@ export default function App() {
           }`}</Error>
         )}
 
-        {/*<ul>{data && data.map(item => <li key={item.name}>{item.name}</li>)}</ul>*/}
-
         <Calendar />
       </MainContainer>
     </AppContainer>
