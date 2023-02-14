@@ -183,8 +183,8 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
           const formattedDate = originalMoment.format('DD-MM-YY')
           const isShowTasks = daysWithTasks.find(d => d.id === formattedDate)
           const day = daysWithTasks.find(day => day.id === id)
-
           const isFirstDayOfMonth = normalizedDayNumber === '1'
+
           return (
             <CellBox
               key={formattedDate}

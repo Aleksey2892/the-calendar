@@ -15,4 +15,17 @@ const Error = styled(Loading)`
   color: #981515;
 `
 
-export { AppContainer, Loading, Error }
+const ControlButtonBox = styled.div`
+  margin-top: 20px;
+
+  button {
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #635a57ff;
+  }
+`
+
+export { AppContainer, Loading, Error, ControlButtonBox }

@@ -8,11 +8,27 @@ const Container = styled.div`
     margin: 0;
   }
 
-  padding: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
+  div {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    list-style: none;
+    margin: 0;
+    padding: 0 0 7px;
+    border-bottom: 1px solid #404040ff;
+
+    li {
+      text-align: center;
+      color: #dfddddff;
+    }
+  }
 
   p {
     font-size: 24px;
@@ -54,33 +70,45 @@ export const CalendarHeader = ({
 
   return (
     <Container>
-      <p>{currentMonth}</p>
+      <div>
+        <p>{currentMonth}</p>
 
-      <ControlsBox>
-        <button
-          type="button"
-          data-action={'prev'}
-          onClick={handleChangeCalendar}
-        >
-          {'<'}
-        </button>
+        <ControlsBox>
+          <button
+            type="button"
+            data-action={'prev'}
+            onClick={handleChangeCalendar}
+          >
+            {'<'}
+          </button>
 
-        <button
-          type="button"
-          data-action={'current'}
-          onClick={handleChangeCalendar}
-        >
-          {'Current Month'}
-        </button>
+          <button
+            type="button"
+            data-action={'current'}
+            onClick={handleChangeCalendar}
+          >
+            {'Current Month'}
+          </button>
 
-        <button
-          type="button"
-          data-action={'next'}
-          onClick={handleChangeCalendar}
-        >
-          {'>'}
-        </button>
-      </ControlsBox>
+          <button
+            type="button"
+            data-action={'next'}
+            onClick={handleChangeCalendar}
+          >
+            {'>'}
+          </button>
+        </ControlsBox>
+      </div>
+
+      <ul>
+        <li>Monday</li>
+        <li>Tuesday</li>
+        <li>Wednesday</li>
+        <li>Thursday</li>
+        <li>Friday</li>
+        <li>Saturday</li>
+        <li>Sunday</li>
+      </ul>
     </Container>
   )
 }
