@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import React from 'react'
 import moment from 'moment'
 import { useCalendar } from '../../../utils/customHooks/useCalendar'
-// import { useCalendar } from '../../../utils/customHooks/useCalendar'
 
 const Container = styled.div`
   * {
@@ -13,9 +12,30 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-weight: bold;
+
+  p {
+    font-size: 24px;
+    color: #dfddddff;
+  }
+
+  button {
+    cursor: pointer;
+    color: #dfddddff;
+
+    &:nth-child(2) {
+      margin: 0 2px 0 2px;
+    }
+  }
 `
 
-const ControlsBox = styled.div``
+const ControlsBox = styled.div`
+  button {
+    border: none;
+    border-radius: 5px;
+    background-color: #635a57ff;
+  }
+`
 
 export const CalendarHeader = ({
   currentMonth,

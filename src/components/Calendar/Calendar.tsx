@@ -9,9 +9,11 @@ import {
   CellBox,
   DayNumber,
   FirstLine,
+  HolidayList,
   TasksList,
   StyledInput,
 } from './Calendar.styled'
+import { TypeHolidays } from '../../services/API'
 
 type Task = { id: string; text: string }
 
@@ -25,7 +27,7 @@ type DaysWithTasks = {
   tasks: Task[]
 }
 
-export const Calendar = () => {
+export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
   const [today, setToday] = useState<moment.Moment>(moment())
   const [monthDays, setMonthDays] = useState<Day[]>([])
   const [daysWithTasks, setDaysWithTasks] = useState<DaysWithTasks[]>([])
@@ -52,7 +54,7 @@ export const Calendar = () => {
     if (!foundDay) {
       const newDay = {
         id: dayID,
-        tasks: [{ id: `${dayID}/${nanoid(4)}`, text: '' }],
+        tasks: [{ id: `${dayID}/${nanoid(6)}`, text: '' }],
       }
       return setDaysWithTasks(prev => [...prev, newDay])
     }
@@ -61,7 +63,7 @@ export const Calendar = () => {
       return prev.map(d => {
         if (d.id !== dayID) return d
 
-        const newTask = { id: `${dayID}/${nanoid(4)}`, text: '' }
+        const newTask = { id: `${dayID}/${nanoid(6)}`, text: '' }
         return { ...d, tasks: [...d.tasks, newTask] }
       })
     })
@@ -153,10 +155,6 @@ export const Calendar = () => {
     e: React.DragEvent<HTMLLIElement> | any,
     day: any,
   ) {
-    console.log('handleDropOnBoard day', day)
-    console.log('handleDropOnBoard dragTask', dragTask)
-    console.log('handleDropOnBoard dragDay', dragDay)
-
     day.tasks.push(dragTask)
     const targetIdx = dragDay.tasks.indexOf(dragTask)
     dragDay.tasks.splice(targetIdx, 1)
@@ -186,6 +184,7 @@ export const Calendar = () => {
           const isShowTasks = daysWithTasks.find(d => d.id === formattedDate)
           const day = daysWithTasks.find(day => day.id === id)
 
+          const isFirstDayOfMonth = normalizedDayNumber === '1'
           return (
             <CellBox
               key={formattedDate}
@@ -199,15 +198,32 @@ export const Calendar = () => {
                 <DayNumber
                   isCurrentDay={isCurrentDay(originalMoment)}
                   isCurrentMonth={isCurrentMonth(originalMoment, today)}
+                  isFirstDay={isFirstDayOfMonth}
                 >
-                  {normalizedDayNumber}{' '}
-                  {normalizedDayNumber === '1' && slicedMonthName}
+                  {normalizedDayNumber} {isFirstDayOfMonth && slicedMonthName}
                 </DayNumber>
 
                 <button onClick={() => handleMakeNewTask(formattedDate)}>
                   +
                 </button>
               </FirstLine>
+
+              <HolidayList>
+                {holidays.map(holiday => {
+                  const isShowHoliday = moment(holiday.date).isSame(
+                    originalMoment,
+                    'day',
+                  )
+                  if (isShowHoliday) {
+                    return (
+                      <li key={`${holiday.countryCode}${nanoid(6)}`}>
+                        {holiday.name}
+                      </li>
+                    )
+                  }
+                  return null
+                })}
+              </HolidayList>
 
               <TasksList>
                 {isShowTasks?.tasks.map(t => {
