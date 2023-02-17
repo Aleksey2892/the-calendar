@@ -1,15 +1,18 @@
 import { useCallback, useRef, useState } from 'react'
 import { useAsync } from 'react-use'
+import moment from 'moment'
+import exportFromJSON from 'export-from-json'
 import { toPng } from 'html-to-image'
 import { getAllCountries, TypeHolidays } from '../../services/API'
 
 import { Header } from '../Header'
 import { MainContainer } from '../MainContainer'
 import { Calendar } from '../Calendar'
-import { AppContainer, Loading, Error, ControlButtonBox } from './App.styled'
+import { DaysWithTasks } from '../Calendar/Calendar'
+import { AppContainer, Loading, Error } from './App.styled'
 
 export default function App() {
-  const [data, setData] = useState<TypeHolidays[] | []>([])
+  const [holidays, setHolidays] = useState<TypeHolidays[] | []>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isError, setIsError] = useState<null | string>(null)
   const ref = useRef<HTMLDivElement>(null)
@@ -26,7 +29,7 @@ export default function App() {
         if (!found) filtered.push(holiday)
       }
 
-      setData(filtered)
+      setHolidays(filtered)
     } catch (e: any) {
       if (e) setIsError(e?.message)
     } finally {
@@ -42,7 +45,7 @@ export default function App() {
     toPng(ref.current, { cacheBust: true })
       .then(dataUrl => {
         const link = document.createElement('a')
-        link.download = 'my-image-name.png'
+        link.download = 'calendar-image.png'
         link.href = dataUrl
         link.click()
       })
@@ -50,6 +53,29 @@ export default function App() {
         console.log(err)
       })
   }, [ref])
+
+  const exportToJsonHandler = (data: DaysWithTasks[]) => {
+    const exportData = data
+      .map(day => {
+        const isHasHolidays = holidays
+          .filter(holiday =>
+            moment(day.id, 'YYYY-MM-DD').isSame(holiday.date, 'day'),
+          )
+          .map(({ countryCode, localName, name }) => ({
+            countryCode,
+            localName,
+            name,
+          }))
+
+        return { ...day, holidays: [...isHasHolidays] }
+      })
+      .filter(i => i.tasks.length || i.holidays.length)
+
+    const fileName = 'calendar-data'
+    const exportType = exportFromJSON.types.json
+
+    exportFromJSON({ data: exportData, fileName, exportType })
+  }
 
   return (
     <AppContainer>
@@ -64,14 +90,11 @@ export default function App() {
         )}
 
         <div ref={ref}>
-          <Calendar holidays={data} />
+          <Calendar
+            holidays={holidays}
+            handlers={{ exportToImageHandler, exportToJsonHandler }}
+          />
         </div>
-
-        <ControlButtonBox>
-          <button onClick={exportToImageHandler}>
-            Save calendar page as a picture
-          </button>
-        </ControlButtonBox>
       </MainContainer>
     </AppContainer>
   )

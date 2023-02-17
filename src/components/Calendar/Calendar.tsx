@@ -13,6 +13,7 @@ import {
   HolidayList,
   TasksList,
   StyledInput,
+  ControlButtonBox,
 } from './Calendar.styled'
 import { TypeHolidays } from '../../services/API'
 
@@ -27,12 +28,23 @@ type Day = {
   originalMoment: moment.Moment
 }
 
-type DaysWithTasks = {
+export type DaysWithTasks = {
   id: string
   tasks: Task[]
 }
 
-export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
+interface ICalendar {
+  holidays: TypeHolidays[]
+  handlers: {
+    exportToImageHandler: () => void
+    exportToJsonHandler: (daysWithTasks: DaysWithTasks[]) => void
+  }
+}
+
+export const Calendar = ({
+  holidays,
+  handlers: { exportToImageHandler, exportToJsonHandler },
+}: ICalendar) => {
   const [today, setToday] = useState<moment.Moment>(moment())
   const [monthDays, setMonthDays] = useState<Day[]>([])
   const [daysWithTasks, setDaysWithTasks] = useState<DaysWithTasks[]>([])
@@ -49,7 +61,7 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
 
   useEffect(() => {
     const templates = monthDays.map(day => ({
-      id: day.originalMoment.format('DD-MM-YY'),
+      id: day.originalMoment.format('YYYY-MM-DD'),
       tasks: [],
     }))
 
@@ -71,7 +83,7 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
     })
 
     if (result.length) {
-      setToday(moment(result[0].id.split('/').shift(), 'DD-MM-YY'))
+      setToday(moment(result[0].id.split('/').shift(), 'YYYY-MM-DD'))
     }
 
     // eslint-disable-next-line
@@ -206,128 +218,143 @@ export const Calendar = ({ holidays }: { holidays: TypeHolidays[] }) => {
   const currentMonth = today.format('MMMM YYYY')
 
   return (
-    <CalendarWrapper>
-      <CalendarHeader
-        changeMonth={setToday}
-        findAction={{ value: searchInputValue, onChange: setSearchInputValue }}
-        currentMonth={currentMonth}
-      />
+    <>
+      <CalendarWrapper>
+        <CalendarHeader
+          changeMonth={setToday}
+          findAction={{
+            value: searchInputValue,
+            onChange: setSearchInputValue,
+          }}
+          currentMonth={currentMonth}
+        />
 
-      <BoxList>
-        {monthDays?.map(({ id, originalMoment }) => {
-          const normalizedDayNumber = originalMoment.format('D')
-          const slicedMonthName = currentMonth.slice(0, 3)
-          const formattedDate = originalMoment.format('DD-MM-YY')
-          const isShowTasks = daysWithTasks.find(d => d.id === formattedDate)
-          const day = daysWithTasks.find(day => day.id === id)
-          const isFirstDayOfMonth = normalizedDayNumber === '1'
+        <BoxList>
+          {monthDays?.map(({ id, originalMoment }) => {
+            const normalizedDayNumber = originalMoment.format('D')
+            const slicedMonthName = currentMonth.slice(0, 3)
+            const formattedDate = originalMoment.format('YYYY-MM-DD')
+            const isShowTasks = daysWithTasks.find(d => d.id === formattedDate)
+            const day = daysWithTasks.find(day => day.id === id)
+            const isFirstDayOfMonth = normalizedDayNumber === '1'
 
-          return (
-            <CellBox
-              key={formattedDate}
-              isWeekend={
-                originalMoment.day() === 6 || originalMoment.day() === 0
-              }
-              onDragOver={e => handleDragOver(e)}
-              onDrop={e => handleDropOnBoard(e, day)}
-            >
-              <FirstLine>
-                <DayNumber
-                  isCurrentDay={isCurrentDay(originalMoment)}
-                  isCurrentMonth={isCurrentMonth(originalMoment, today)}
-                  isFirstDay={isFirstDayOfMonth}
-                >
-                  {normalizedDayNumber} {isFirstDayOfMonth && slicedMonthName}
-                </DayNumber>
+            return (
+              <CellBox
+                key={formattedDate}
+                isWeekend={
+                  originalMoment.day() === 6 || originalMoment.day() === 0
+                }
+                onDragOver={e => handleDragOver(e)}
+                onDrop={e => handleDropOnBoard(e, day)}
+              >
+                <FirstLine>
+                  <DayNumber
+                    isCurrentDay={isCurrentDay(originalMoment)}
+                    isCurrentMonth={isCurrentMonth(originalMoment, today)}
+                    isFirstDay={isFirstDayOfMonth}
+                  >
+                    {normalizedDayNumber} {isFirstDayOfMonth && slicedMonthName}
+                  </DayNumber>
 
-                <button
-                  onClick={() =>
-                    setIsShowColors(prev => ({
-                      day: formattedDate,
-                      show: !prev.show,
-                    }))
-                  }
-                >
-                  +
-                </button>
+                  <button
+                    onClick={() =>
+                      setIsShowColors(prev => ({
+                        day: formattedDate,
+                        show: !prev.show,
+                      }))
+                    }
+                  >
+                    +
+                  </button>
 
-                {isShowColors.show && formattedDate === isShowColors.day && (
-                  <ColorsList>
-                    <li
-                      onClick={() =>
-                        handleMakeNewTask(formattedDate, '#8c5e19')
-                      }
-                    />
-                    <li
-                      onClick={() =>
-                        handleMakeNewTask(formattedDate, '#631553')
-                      }
-                    />
-                    <li
-                      onClick={() =>
-                        handleMakeNewTask(formattedDate, '#152a63')
-                      }
-                    />
-                    <li
-                      onClick={() =>
-                        handleMakeNewTask(formattedDate, '#4f3e3e')
-                      }
-                    />
-                  </ColorsList>
-                )}
-              </FirstLine>
+                  {isShowColors.show && formattedDate === isShowColors.day && (
+                    <ColorsList>
+                      <li
+                        onClick={() =>
+                          handleMakeNewTask(formattedDate, '#8c5e19')
+                        }
+                      />
+                      <li
+                        onClick={() =>
+                          handleMakeNewTask(formattedDate, '#631553')
+                        }
+                      />
+                      <li
+                        onClick={() =>
+                          handleMakeNewTask(formattedDate, '#152a63')
+                        }
+                      />
+                      <li
+                        onClick={() =>
+                          handleMakeNewTask(formattedDate, '#4f3e3e')
+                        }
+                      />
+                    </ColorsList>
+                  )}
+                </FirstLine>
 
-              <HolidayList>
-                {holidays.map(holiday => {
-                  const isShowHoliday = moment(holiday.date).isSame(
-                    originalMoment,
-                    'day',
-                  )
-                  if (isShowHoliday) {
+                <HolidayList>
+                  {holidays.map(holiday => {
+                    const isShowHoliday = moment(holiday.date).isSame(
+                      originalMoment,
+                      'day',
+                    )
+                    if (isShowHoliday) {
+                      return (
+                        <li key={`${holiday.countryCode}${nanoid(6)}`}>
+                          {holiday.name}
+                        </li>
+                      )
+                    }
+                    return null
+                  })}
+                </HolidayList>
+
+                <TasksList>
+                  {isShowTasks?.tasks.map(t => {
+                    const task = day?.tasks.find(task => task.id === t.id)
+
                     return (
-                      <li key={`${holiday.countryCode}${nanoid(6)}`}>
-                        {holiday.name}
+                      <li key={t.id}>
+                        <StyledInput
+                          type={'text'}
+                          value={t.text}
+                          onChange={e =>
+                            handleChangeTask(e.target.value, id, t.id)
+                          }
+                          color={t.color}
+                          className={'event-item'}
+                          draggable
+                          onDragOver={e => handleDragOver(e)}
+                          onDragLeave={e => handleDragLeave(e)}
+                          onDragStart={e => handleDragStart(e, day, task)}
+                          onDragEnd={e => handleDragEnd(e)}
+                          onDrop={e => handleDrop(e, day, task)}
+                        />
+                        <button
+                          onClick={() => handleDeleteTask(formattedDate, t.id)}
+                        >
+                          x
+                        </button>
                       </li>
                     )
-                  }
-                  return null
-                })}
-              </HolidayList>
+                  })}
+                </TasksList>
+              </CellBox>
+            )
+          })}
+        </BoxList>
+      </CalendarWrapper>
 
-              <TasksList>
-                {isShowTasks?.tasks.map(t => {
-                  const task = day?.tasks.find(task => task.id === t.id)
+      <ControlButtonBox>
+        <button onClick={exportToImageHandler}>
+          Save calendar page as a picture
+        </button>
 
-                  return (
-                    <li key={t.id}>
-                      <StyledInput
-                        type={'text'}
-                        value={t.text}
-                        onChange={e =>
-                          handleChangeTask(e.target.value, id, t.id)
-                        }
-                        color={t.color}
-                        className={'event-item'}
-                        draggable
-                        onDragOver={e => handleDragOver(e)}
-                        onDragLeave={e => handleDragLeave(e)}
-                        onDragStart={e => handleDragStart(e, day, task)}
-                        onDragEnd={e => handleDragEnd(e)}
-                        onDrop={e => handleDrop(e, day, task)}
-                      />
-                      <button
-                        onClick={() => handleDeleteTask(formattedDate, t.id)}
-                      >
-                        x
-                      </button>
-                    </li>
-                  )
-                })}
-              </TasksList>
-            </CellBox>
-          )
-        })}
-      </BoxList>
-    </CalendarWrapper>
+        <button onClick={() => exportToJsonHandler(daysWithTasks)}>
+          Save calendar data to json
+        </button>
+      </ControlButtonBox>
+    </>
   )
 }

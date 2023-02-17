@@ -150,6 +150,32 @@ const StyledInput = styled.input`
   background-color: ${props => props.color};
 `
 
+const ControlButtonBox = styled.div`
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  button {
+    padding: 7px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    color: #fff;
+    background-color: #635a57ff;
+
+    &:hover {
+      color: #635a57ff;
+      background-color: #fff;
+      border: 1px solid #000000ff;
+    }
+
+    &:first-child {
+      margin-bottom: 10px;
+    }
+  }
+`
+
 export {
   CalendarWrapper,
   BoxList,
@@ -160,4 +186,5 @@ export {
   DayNumber,
   TasksList,
   StyledInput,
+  ControlButtonBox,
 }
