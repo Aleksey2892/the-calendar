@@ -70,6 +70,14 @@ export default function App() {
         return { ...day, holidays: [...isHasHolidays] }
       })
       .filter(i => i.tasks.length || i.holidays.length)
+      .sort((a, b) => {
+        if (moment(a.id).isAfter(b.id)) {
+          return 1
+        } else if (moment(a.id).isSame(b.id)) {
+          return 0
+        }
+        return -1
+      })
 
     const fileName = 'calendar-data'
     const exportType = exportFromJSON.types.json
