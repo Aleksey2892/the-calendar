@@ -51,7 +51,7 @@ export const Calendar = ({
   const [dragDay, setDragDay] = useState<DaysWithTasks | null>(null);
   const [dragTask, setDragTask] = useState<Task | null>(null);
   const [searchInputValue, setSearchInputValue] = useState<string>('');
-  const [isShowColors, setIsShowColors] = useState({ show: false, day: '' });
+  const [showColors, setShowColors] = useState({ show: false, day: '' });
   const { makeMonthCalendar, isSameDate } = useCalendar();
 
   useEffect(() => {
@@ -108,7 +108,7 @@ export const Calendar = ({
       });
     });
 
-    setIsShowColors(prev => ({
+    setShowColors(prev => ({
       show: !prev.show,
       day: '',
     }));
@@ -264,7 +264,7 @@ export const Calendar = ({
 
                   <button
                     onClick={() =>
-                      setIsShowColors(prev => ({
+                      setShowColors(prev => ({
                         day: formattedDate,
                         show: !prev.show,
                       }))
@@ -273,7 +273,7 @@ export const Calendar = ({
                     +
                   </button>
 
-                  {isShowColors.show && formattedDate === isShowColors.day && (
+                  {showColors.show && formattedDate === showColors.day && (
                     <ColorsList>
                       <li
                         onClick={() =>
@@ -300,20 +300,17 @@ export const Calendar = ({
                 </FirstLine>
 
                 <HolidayList>
-                  {holidays.map(holiday => {
-                    const isShowHoliday = moment(holiday.date).isSame(
-                      originalMoment,
-                      'day',
-                    );
-                    if (isShowHoliday) {
+                  {holidays
+                    .filter(h => {
+                      return isSameDate(moment(h.date), originalMoment, 'day');
+                    })
+                    .map(holiday => {
                       return (
                         <li key={`${holiday.countryCode}${nanoid(6)}`}>
                           {holiday.name}
                         </li>
                       );
-                    }
-                    return null;
-                  })}
+                    })}
                 </HolidayList>
 
                 <TasksList>
