@@ -1,7 +1,7 @@
-import React from 'react'
-import moment from 'moment'
+import React from 'react';
+import moment from 'moment';
 
-type Moment = moment.Moment
+type Moment = moment.Moment;
 
 export const useCalendar = () => {
   function makeMonthCalendar(today: Moment) {
@@ -10,20 +10,20 @@ export const useCalendar = () => {
       .subtract(1, 'month')
       .endOf('month')
       .endOf('week')
-      .isoWeekday(1)
+      .isoWeekday(1);
 
-    const endDay = today.clone().add(1, 'month').endOf('month')
+    const endDay = today.clone().add(1, 'month').endOf('month');
 
-    const monthCalendar = []
-    let initialDay = startDay.clone()
+    const monthCalendar = [];
+    let initialDay = startDay.clone();
     do {
-      monthCalendar.push(initialDay.clone())
-      initialDay = initialDay.add(1, 'day')
-    } while (!initialDay.isSame(endDay, 'day'))
+      monthCalendar.push(initialDay.clone());
+      initialDay = initialDay.add(1, 'day');
+    } while (!initialDay.isSame(endDay, 'day'));
 
     return monthCalendar.splice(0, 42).map(day => {
-      return { id: day.format('YYYY-MM-DD'), originalMoment: day }
-    })
+      return { id: day.format('YYYY-MM-DD'), originalMoment: day };
+    });
   }
 
   function isSameDate(
@@ -31,7 +31,7 @@ export const useCalendar = () => {
     checkedDate2: Moment,
     granularity: 'day' | 'month',
   ): boolean {
-    return checkedDate1.isSame(checkedDate2, granularity)
+    return checkedDate1.isSame(checkedDate2, granularity);
   }
 
   function changeCalendar(
@@ -40,16 +40,16 @@ export const useCalendar = () => {
   ): void {
     switch (action) {
       case 'prev':
-        changeMonth((prev: Moment) => prev.clone().subtract(1, 'month'))
-        break
+        changeMonth((prev: Moment) => prev.clone().subtract(1, 'month'));
+        break;
       case 'current':
-        changeMonth(moment())
-        break
+        changeMonth(moment());
+        break;
       case 'next':
-        changeMonth((prev: Moment) => prev.clone().add(1, 'month'))
-        break
+        changeMonth((prev: Moment) => prev.clone().add(1, 'month'));
+        break;
       default:
-        changeMonth(moment())
+        changeMonth(moment());
     }
   }
 
@@ -57,5 +57,5 @@ export const useCalendar = () => {
     makeMonthCalendar,
     changeCalendar,
     isSameDate,
-  }
-}
+  };
+};

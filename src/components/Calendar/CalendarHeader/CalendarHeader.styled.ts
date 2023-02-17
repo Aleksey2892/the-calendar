@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 const Container = styled.div`
   * {
@@ -40,7 +40,7 @@ const Container = styled.div`
       margin: 0 4px 0 4px;
     }
   }
-`
+`;
 
 const ControlsBox = styled.div`
   button {
@@ -61,6 +61,6 @@ const ControlsBox = styled.div`
       background-color: #502d24;
     }
   }
-`
+`;
 
-export { Container, ControlsBox }
+export { Container, ControlsBox };

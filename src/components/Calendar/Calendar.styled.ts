@@ -1,11 +1,11 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 const CalendarWrapper = styled.div`
   overflow: hidden;
   border: 3px solid #404040ff;
   border-radius: 15px;
   background-color: #2e221eff;
-`
+`;
 
 const BoxList = styled.ul`
   margin: 0;
@@ -17,7 +17,7 @@ const BoxList = styled.ul`
   grid-gap: 1px;
   background-color: #404040ff;
   list-style: none;
-`
+`;
 
 const CellBox = styled.li<{ isWeekend: boolean }>`
   padding: 5px;
@@ -34,7 +34,7 @@ const CellBox = styled.li<{ isWeekend: boolean }>`
   &:hover button {
     visibility: visible;
   }
-`
+`;
 
 const ColorsList = styled.ul`
   margin: 3px 0 5px;
@@ -63,7 +63,7 @@ const ColorsList = styled.ul`
       background: #4f3e3e;
     }
   }
-`
+`;
 
 const FirstLine = styled.div`
   margin-bottom: 3px;
@@ -83,7 +83,7 @@ const FirstLine = styled.div`
       background-color: #502d24;
     }
   }
-`
+`;
 const HolidayList = styled.ul`
   margin: 0 0 1px 0;
   padding: 0;
@@ -97,12 +97,12 @@ const HolidayList = styled.ul`
     background-color: #025602;
     text-align: center;
   }
-`
+`;
 
 const DayNumber = styled.p<{
-  isCurrentDay: boolean
-  isCurrentMonth: boolean
-  isFirstDay: boolean
+  isCurrentDay: boolean;
+  isCurrentMonth: boolean;
+  isFirstDay: boolean;
 }>`
   margin: 0;
   width: max-content;
@@ -110,11 +110,11 @@ const DayNumber = styled.p<{
   border-radius: 50%;
   font-weight: ${props => (props.isCurrentDay || props.isFirstDay) && 'bold'};
   color: ${props => {
-    if (!props.isCurrentMonth) return '#5d5d5d'
-    if (props.isCurrentDay) return '#000000FF'
+    if (!props.isCurrentMonth) return '#5d5d5d';
+    if (props.isCurrentDay) return '#000000FF';
   }};
   background-color: ${props => props.isCurrentDay && '#FF5446FF'};
-`
+`;
 
 const TasksList = styled.ul`
   margin: 0;
@@ -138,7 +138,7 @@ const TasksList = styled.ul`
       }
     }
   }
-`
+`;
 
 const StyledInput = styled.input`
   width: 100%;
@@ -148,7 +148,7 @@ const StyledInput = styled.input`
   border: none;
   border-bottom: 1px solid #282727;
   background-color: ${props => props.color};
-`
+`;
 
 const ControlButtonBox = styled.div`
   margin-top: 20px;
@@ -174,7 +174,7 @@ const ControlButtonBox = styled.div`
       margin-bottom: 10px;
     }
   }
-`
+`;
 
 export {
   CalendarWrapper,
@@ -187,4 +187,4 @@ export {
   TasksList,
   StyledInput,
   ControlButtonBox,
-}
+};
