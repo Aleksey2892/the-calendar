@@ -48,11 +48,11 @@ export const Calendar = ({
   const [today, setToday] = useState<moment.Moment>(moment())
   const [monthDays, setMonthDays] = useState<Day[]>([])
   const [daysWithTasks, setDaysWithTasks] = useState<DaysWithTasks[]>([])
-  const [dragDay, setDragDay] = useState<DaysWithTasks | any>(null)
-  const [dragTask, setDragTask] = useState<Task | any>(null)
+  const [dragDay, setDragDay] = useState<DaysWithTasks | null>(null)
+  const [dragTask, setDragTask] = useState<Task | null>(null)
   const [searchInputValue, setSearchInputValue] = useState<string>('')
   const [isShowColors, setIsShowColors] = useState({ show: false, day: '' })
-  const { makeMonthCalendar, isCurrentDay, isCurrentMonth } = useCalendar()
+  const { makeMonthCalendar, isSameDate } = useCalendar()
 
   useEffect(() => {
     setMonthDays(makeMonthCalendar(today))
@@ -141,50 +141,54 @@ export const Calendar = ({
     })
   }
 
-  function handleDragOver(e: React.DragEvent<HTMLInputElement> | any) {
+  function handleDragOver(
+    e: React.DragEvent<HTMLInputElement | HTMLLIElement>,
+  ): void {
     e.preventDefault()
-    const isActionItem = e.target.className === 'event-item'
+
+    const isActionItem =
+      (e.target as HTMLInputElement | HTMLLIElement).className === 'event-item'
 
     if (isActionItem) {
-      e.target.style.boxShadow = '0 4px 3px gray'
+      ;(e.target as HTMLInputElement | HTMLLIElement).style.boxShadow =
+        '0 4px 3px gray'
     }
   }
 
-  function handleDragLeave(e: React.DragEvent<HTMLInputElement> | any) {
-    e.target.style.boxShadow = 'none'
+  function handleDragLeave(e: React.DragEvent<HTMLInputElement>): void {
+    ;(e.target as HTMLInputElement).style.boxShadow = 'none'
   }
 
   function handleDragStart(
-    e: React.DragEvent<HTMLInputElement> | any,
-    day: any,
-    task: any,
+    e: React.DragEvent<HTMLInputElement>,
+    day: DaysWithTasks | undefined,
+    task: Task | undefined,
   ) {
-    setDragDay(day)
-    setDragTask(task)
+    setDragDay(day || null)
+    setDragTask(task || null)
   }
 
-  function handleDragEnd(e: React.DragEvent<HTMLInputElement> | any) {
-    e.target.style.boxShadow = 'none'
+  function handleDragEnd(e: React.DragEvent<HTMLInputElement>): void {
+    ;(e.target as HTMLInputElement).style.boxShadow = 'none'
   }
 
-  function handleDrop(
-    e: React.DragEvent<HTMLInputElement> | any,
-    day: any,
-    task: any,
-  ) {
+  function handleDrop(e: React.DragEvent<HTMLInputElement>, task?: Task): void {
     e.preventDefault()
 
     setDaysWithTasks(prev => {
       return prev.map(d => {
-        if (d.id !== dragDay.id) {
+        if (d.id !== dragDay?.id) {
           return d
         }
 
-        const targetIndex = d.tasks.indexOf(dragTask)
-        const dropIndex = d.tasks.indexOf(task)
         const newSort = [...d.tasks]
-        newSort.splice(targetIndex, 1)
-        newSort.splice(dropIndex + 1, 0, dragTask)
+
+        if (task) {
+          const targetIndex = d.tasks.indexOf(dragTask as Task)
+          const dropIndex = d.tasks.indexOf(task)
+          newSort.splice(targetIndex, 1)
+          newSort.splice(dropIndex + 1, 0, dragTask as Task)
+        }
 
         return { ...d, tasks: newSort }
       })
@@ -192,27 +196,28 @@ export const Calendar = ({
 
     setDragDay(null)
     setDragTask(null)
-
-    e.target.style.boxShadow = 'none'
+    ;(e.target as HTMLInputElement).style.boxShadow = 'none'
   }
 
   function handleDropOnBoard(
-    e: React.DragEvent<HTMLLIElement> | any,
-    day: any,
-  ) {
-    day.tasks.push(dragTask)
-    const targetIdx = dragDay.tasks.indexOf(dragTask)
-    dragDay.tasks.splice(targetIdx, 1)
+    e: React.DragEvent<HTMLLIElement>,
+    day?: DaysWithTasks,
+  ): void {
+    if (dragDay) {
+      day?.tasks.push(dragTask as Task)
+      const targetIdx = dragDay?.tasks.indexOf(dragTask as Task)
+      dragDay?.tasks.splice(targetIdx, 1)
 
-    setDaysWithTasks(
-      daysWithTasks.map(d => {
-        if (d.id === day.id) return day
-        if (d.id === dragDay.id) return dragDay
-        return d
-      }),
-    )
+      setDaysWithTasks(
+        daysWithTasks.map(d => {
+          if (d.id === day?.id) return day
+          if (d.id === dragDay?.id) return dragDay
+          return d
+        }),
+      )
+    }
 
-    e.target.style.boxShadow = 'none'
+    ;(e.target as HTMLLIElement).style.boxShadow = 'none'
   }
 
   const currentMonth = today.format('MMMM YYYY')
@@ -249,8 +254,8 @@ export const Calendar = ({
               >
                 <FirstLine>
                   <DayNumber
-                    isCurrentDay={isCurrentDay(originalMoment)}
-                    isCurrentMonth={isCurrentMonth(originalMoment, today)}
+                    isCurrentDay={isSameDate(moment(), originalMoment, 'day')}
+                    isCurrentMonth={isSameDate(originalMoment, today, 'month')}
                     isFirstDay={isFirstDayOfCurrentMonth}
                   >
                     {normalizedDayNumber}{' '}
@@ -330,7 +335,7 @@ export const Calendar = ({
                           onDragLeave={e => handleDragLeave(e)}
                           onDragStart={e => handleDragStart(e, day, task)}
                           onDragEnd={e => handleDragEnd(e)}
-                          onDrop={e => handleDrop(e, day, task)}
+                          onDrop={e => handleDrop(e, task)}
                         />
                         <button
                           onClick={() => handleDeleteTask(formattedDate, t.id)}

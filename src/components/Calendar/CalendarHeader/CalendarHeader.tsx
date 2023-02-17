@@ -15,10 +15,12 @@ export const CalendarHeader = ({
     onChange: React.Dispatch<React.SetStateAction<string>>
   }
 }) => {
-  const { changeCalendar, isCurrentMonth } = useCalendar()
+  const { changeCalendar, isSameDate } = useCalendar()
 
-  const handleChangeCalendar = (e: any) => {
-    const actionType = e.target.getAttribute('data-action')
+  const handleChangeCalendar = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    actionType: string,
+  ): void => {
     changeCalendar(actionType, changeMonth)
   }
 
@@ -34,28 +36,19 @@ export const CalendarHeader = ({
         />
 
         <ControlsBox>
-          <button
-            type="button"
-            data-action={'prev'}
-            onClick={handleChangeCalendar}
-          >
+          <button type="button" onClick={e => handleChangeCalendar(e, 'prev')}>
             {'<'}
           </button>
 
           <button
             type="button"
-            data-action={'current'}
-            disabled={isCurrentMonth(moment(), moment(currentMonthName))}
-            onClick={handleChangeCalendar}
+            disabled={isSameDate(moment(), moment(currentMonthName), 'month')}
+            onClick={e => handleChangeCalendar(e, 'current')}
           >
             {'Current Month'}
           </button>
 
-          <button
-            type="button"
-            data-action={'next'}
-            onClick={handleChangeCalendar}
-          >
+          <button type="button" onClick={e => handleChangeCalendar(e, 'next')}>
             {'>'}
           </button>
         </ControlsBox>

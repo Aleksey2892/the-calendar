@@ -26,12 +26,12 @@ export const useCalendar = () => {
     })
   }
 
-  function isCurrentDay(day: Moment): boolean {
-    return moment().isSame(day, 'day')
-  }
-
-  function isCurrentMonth(day: Moment, today: Moment): boolean {
-    return today.isSame(day, 'month')
+  function isSameDate(
+    checkedDate1: Moment,
+    checkedDate2: Moment,
+    granularity: 'day' | 'month',
+  ): boolean {
+    return checkedDate1.isSame(checkedDate2, granularity)
   }
 
   function changeCalendar(
@@ -55,8 +55,7 @@ export const useCalendar = () => {
 
   return {
     makeMonthCalendar,
-    isCurrentDay,
-    isCurrentMonth,
     changeCalendar,
+    isSameDate,
   }
 }
