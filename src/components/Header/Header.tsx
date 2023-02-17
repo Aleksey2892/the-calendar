@@ -1,9 +1,9 @@
-import { StyledHeader, StyledText } from './Header.styled'
+import { StyledHeader, Title } from './Header.styled'
 
 export const Header = () => {
   return (
     <StyledHeader>
-      <StyledText>The Calendar</StyledText>
+      <Title>The Calendar</Title>
     </StyledHeader>
   )
 }

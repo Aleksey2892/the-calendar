@@ -36,20 +36,20 @@ export const useCalendar = () => {
 
   function changeCalendar(
     action: string,
-    fn: React.Dispatch<React.SetStateAction<Moment>>,
+    changeMonth: React.Dispatch<React.SetStateAction<Moment>>,
   ): void {
     switch (action) {
       case 'prev':
-        fn((prev: Moment) => prev.clone().subtract(1, 'month'))
+        changeMonth((prev: Moment) => prev.clone().subtract(1, 'month'))
         break
       case 'current':
-        fn(moment())
+        changeMonth(moment())
         break
       case 'next':
-        fn((prev: Moment) => prev.clone().add(1, 'month'))
+        changeMonth((prev: Moment) => prev.clone().add(1, 'month'))
         break
       default:
-        fn(moment())
+        changeMonth(moment())
     }
   }
 

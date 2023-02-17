@@ -226,17 +226,17 @@ export const Calendar = ({
             value: searchInputValue,
             onChange: setSearchInputValue,
           }}
-          currentMonth={currentMonth}
+          currentMonthName={currentMonth}
         />
 
         <BoxList>
           {monthDays?.map(({ id, originalMoment }) => {
             const normalizedDayNumber = originalMoment.format('D')
-            const slicedMonthName = currentMonth.slice(0, 3)
+            const slicedMonthName = originalMoment.format('MMMM').slice(0, 3)
             const formattedDate = originalMoment.format('YYYY-MM-DD')
             const isShowTasks = daysWithTasks.find(d => d.id === formattedDate)
             const day = daysWithTasks.find(day => day.id === id)
-            const isFirstDayOfMonth = normalizedDayNumber === '1'
+            const isFirstDayOfCurrentMonth = normalizedDayNumber === '1'
 
             return (
               <CellBox
@@ -251,9 +251,10 @@ export const Calendar = ({
                   <DayNumber
                     isCurrentDay={isCurrentDay(originalMoment)}
                     isCurrentMonth={isCurrentMonth(originalMoment, today)}
-                    isFirstDay={isFirstDayOfMonth}
+                    isFirstDay={isFirstDayOfCurrentMonth}
                   >
-                    {normalizedDayNumber} {isFirstDayOfMonth && slicedMonthName}
+                    {normalizedDayNumber}{' '}
+                    {isFirstDayOfCurrentMonth && slicedMonthName}
                   </DayNumber>
 
                   <button

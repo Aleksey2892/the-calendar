@@ -92,7 +92,7 @@ const HolidayList = styled.ul`
   li {
     margin: 0 0 1px 0;
     padding: 0;
-    font-size: 10px;
+    font-size: 14px;
     border: 1px solid #707070;
     background-color: #025602;
     text-align: center;

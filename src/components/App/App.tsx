@@ -1,5 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
-import { useAsync } from 'react-use'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import moment from 'moment'
 import exportFromJSON from 'export-from-json'
 import { toPng } from 'html-to-image'
@@ -17,25 +16,29 @@ export default function App() {
   const [isError, setIsError] = useState<null | string>(null)
   const ref = useRef<HTMLDivElement>(null)
 
-  useAsync(async () => {
+  useEffect(() => {
     setIsLoading(true)
 
-    try {
-      const res = await getAllCountries()
+    async function getHolidays() {
+      try {
+        const res = await getAllCountries()
 
-      const filtered: TypeHolidays[] = []
-      for (const holiday of res) {
-        const found = filtered.find(item => item.name === holiday.name)
-        if (!found) filtered.push(holiday)
+        const filtered: TypeHolidays[] = []
+        for (const holiday of res) {
+          const found = filtered.find(item => item.name === holiday.name)
+          if (!found) filtered.push(holiday)
+        }
+
+        setHolidays(filtered)
+      } catch (e: any) {
+        if (e) setIsError(e?.message)
+      } finally {
+        setIsLoading(false)
       }
-
-      setHolidays(filtered)
-    } catch (e: any) {
-      if (e) setIsError(e?.message)
-    } finally {
-      setIsLoading(false)
     }
-  })
+
+    getHolidays()
+  }, [])
 
   const exportToImageHandler = useCallback(() => {
     if (ref.current === null) {
