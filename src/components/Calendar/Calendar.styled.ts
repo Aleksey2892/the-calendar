@@ -92,7 +92,7 @@ const HolidayList = styled.ul`
   li {
     margin: 0 0 1px 0;
     padding: 0;
-    font-size: 10px;
+    font-size: 14px;
     border: 1px solid #707070;
     background-color: #025602;
     text-align: center;
@@ -150,6 +150,32 @@ const StyledInput = styled.input`
   background-color: ${props => props.color};
 `
 
+const ControlButtonBox = styled.div`
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  button {
+    padding: 7px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    color: #fff;
+    background-color: #635a57ff;
+
+    &:hover {
+      color: #635a57ff;
+      background-color: #fff;
+      border: 1px solid #000000ff;
+    }
+
+    &:first-child {
+      margin-bottom: 10px;
+    }
+  }
+`
+
 export {
   CalendarWrapper,
   BoxList,
@@ -160,4 +186,5 @@ export {
   DayNumber,
   TasksList,
   StyledInput,
+  ControlButtonBox,
 }
