@@ -161,8 +161,8 @@ export const Calendar = ({
 
   function handleDragStart(
     e: React.DragEvent<HTMLInputElement>,
-    day: DaysWithTasks | undefined,
-    task: Task | undefined,
+    day?: DaysWithTasks,
+    task?: Task,
   ) {
     setDragDay(day || null);
     setDragTask(task || null);
