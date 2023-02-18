@@ -18,7 +18,9 @@ Required Technologies: TypeScript, React, React Hooks,
 Emotion/Styled-Components/StitchesPlease, upload your source code to GitHub
 repository and application to Vercel/GithubPages
 
-### API - (https://date.nager.at/swagger/index.html)
+### API
+
+https://date.nager.at/swagger/index.html
 
 ### Swagger UI
 
