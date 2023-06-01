@@ -105,7 +105,8 @@ const DayNumber = styled.p<{
   isFirstDay: boolean;
 }>`
   margin: 0;
-  width: max-content;
+  width: ${props => (!props.isFirstDay ? '30px' : 'max-content')};
+  height: 30px;
   padding: 5px;
   border-radius: 50%;
   font-weight: ${props => (props.isCurrentDay || props.isFirstDay) && 'bold'};
@@ -114,6 +115,7 @@ const DayNumber = styled.p<{
     if (props.isCurrentDay) return '#000000FF';
   }};
   background-color: ${props => props.isCurrentDay && '#FF5446FF'};
+  text-align: ${props => !props.isFirstDay && 'center'};
 `;
 
 const TasksList = styled.ul`
