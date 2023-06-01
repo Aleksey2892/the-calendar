@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import moment from 'moment/moment'
-import { nanoid } from 'nanoid'
-import { useCalendar } from '../../utils/customHooks/useCalendar'
-import { CalendarHeader } from './CalendarHeader'
+import React, { useEffect, useState } from 'react';
+import moment from 'moment/moment';
+import { nanoid } from 'nanoid';
+import { useCalendar } from '../../utils/customHooks/useCalendar';
+import { CalendarHeader } from './CalendarHeader';
 import {
   BoxList,
   CalendarWrapper,
@@ -14,208 +14,213 @@ import {
   TasksList,
   StyledInput,
   ControlButtonBox,
-} from './Calendar.styled'
-import { TypeHolidays } from '../../services/API'
+} from './Calendar.styled';
+import { TypeHolidays } from '../../services/API';
 
 type Task = {
-  id: string
-  text: string
-  color: string
-}
+  id: string;
+  text: string;
+  color: string;
+};
 
 type Day = {
-  id: string
-  originalMoment: moment.Moment
-}
+  id: string;
+  originalMoment: moment.Moment;
+};
 
 export type DaysWithTasks = {
-  id: string
-  tasks: Task[]
-}
+  id: string;
+  tasks: Task[];
+};
 
 interface ICalendar {
-  holidays: TypeHolidays[]
+  holidays: TypeHolidays[];
   handlers: {
-    exportToImageHandler: () => void
-    exportToJsonHandler: (daysWithTasks: DaysWithTasks[]) => void
-  }
+    exportToImageHandler: () => void;
+    exportToJsonHandler: (daysWithTasks: DaysWithTasks[]) => void;
+  };
 }
 
 export const Calendar = ({
   holidays,
   handlers: { exportToImageHandler, exportToJsonHandler },
 }: ICalendar) => {
-  const [today, setToday] = useState<moment.Moment>(moment())
-  const [monthDays, setMonthDays] = useState<Day[]>([])
-  const [daysWithTasks, setDaysWithTasks] = useState<DaysWithTasks[]>([])
-  const [dragDay, setDragDay] = useState<DaysWithTasks | any>(null)
-  const [dragTask, setDragTask] = useState<Task | any>(null)
-  const [searchInputValue, setSearchInputValue] = useState<string>('')
-  const [isShowColors, setIsShowColors] = useState({ show: false, day: '' })
-  const { makeMonthCalendar, isCurrentDay, isCurrentMonth } = useCalendar()
+  const [today, setToday] = useState<moment.Moment>(moment());
+  const [monthDays, setMonthDays] = useState<Day[]>([]);
+  const [daysWithTasks, setDaysWithTasks] = useState<DaysWithTasks[]>([]);
+  const [dragDay, setDragDay] = useState<DaysWithTasks | null>(null);
+  const [dragTask, setDragTask] = useState<Task | null>(null);
+  const [searchInputValue, setSearchInputValue] = useState<string>('');
+  const [showColors, setShowColors] = useState({ show: false, day: '' });
+  const { makeMonthCalendar, isSameDate } = useCalendar();
 
   useEffect(() => {
-    setMonthDays(makeMonthCalendar(today))
+    setMonthDays(makeMonthCalendar(today));
     // eslint-disable-next-line
-  }, [today])
+  }, [today]);
 
   useEffect(() => {
     const templates = monthDays.map(day => ({
       id: day.originalMoment.format('YYYY-MM-DD'),
       tasks: [],
-    }))
+    }));
 
-    setDaysWithTasks(prev => [...prev, ...templates])
-  }, [monthDays])
+    setDaysWithTasks(prev => [...prev, ...templates]);
+  }, [monthDays]);
 
   useEffect(() => {
     if (!searchInputValue) {
-      return
+      return;
     }
 
-    const result: Task[] = []
+    const result: Task[] = [];
     daysWithTasks.forEach(day => {
       day.tasks.forEach(task => {
         if (task.text.includes(searchInputValue)) {
-          result.push(task)
+          result.push(task);
         }
-      })
-    })
+      });
+    });
 
     if (result.length) {
-      setToday(moment(result[0].id.split('/').shift(), 'YYYY-MM-DD'))
+      setToday(moment(result[0].id.split('/').shift(), 'YYYY-MM-DD'));
     }
 
     // eslint-disable-next-line
-  }, [searchInputValue])
+  }, [searchInputValue]);
 
   const handleMakeNewTask = (dayID: string, color: string) => {
-    const foundDay = daysWithTasks.find(d => d.id === dayID)
+    const foundDay = daysWithTasks.find(d => d.id === dayID);
     if (!foundDay) {
       const newDay = {
         id: dayID,
         tasks: [{ id: `${dayID}/${nanoid(6)}`, text: '', color }],
-      }
-      return setDaysWithTasks(prev => [...prev, newDay])
+      };
+      return setDaysWithTasks(prev => [...prev, newDay]);
     }
 
     setDaysWithTasks(prev => {
       return prev.map(d => {
-        if (d.id !== dayID) return d
+        if (d.id !== dayID) return d;
 
-        const newTask = { id: `${dayID}/${nanoid(6)}`, text: '', color }
-        return { ...d, tasks: [...d.tasks, newTask] }
-      })
-    })
+        const newTask = { id: `${dayID}/${nanoid(6)}`, text: '', color };
+        return { ...d, tasks: [...d.tasks, newTask] };
+      });
+    });
 
-    setIsShowColors(prev => ({
+    setShowColors(prev => ({
       show: !prev.show,
       day: '',
-    }))
-  }
+    }));
+  };
 
   const handleChangeTask = (text: string, dayID: string, taskID: string) => {
     setDaysWithTasks(prev => {
       return prev.map(d => {
-        if (d.id !== dayID) return d
+        if (d.id !== dayID) return d;
 
         const updatedTask = d.tasks.map(t => {
-          if (t.id !== taskID) return t
+          if (t.id !== taskID) return t;
 
-          return { ...t, text }
-        })
+          return { ...t, text };
+        });
 
-        return { ...d, tasks: updatedTask }
-      })
-    })
-  }
+        return { ...d, tasks: updatedTask };
+      });
+    });
+  };
 
   const handleDeleteTask = (dayID: string, taskID: string) => {
     setDaysWithTasks(prev => {
       return prev.map(d => {
-        if (d.id !== dayID) return d
+        if (d.id !== dayID) return d;
 
-        const filteredTasks = d.tasks.filter(t => t.id !== taskID)
-        return { ...d, tasks: filteredTasks }
-      })
-    })
-  }
+        const filteredTasks = d.tasks.filter(t => t.id !== taskID);
+        return { ...d, tasks: filteredTasks };
+      });
+    });
+  };
 
-  function handleDragOver(e: React.DragEvent<HTMLInputElement> | any) {
-    e.preventDefault()
-    const isActionItem = e.target.className === 'event-item'
+  function handleDragOver(
+    e: React.DragEvent<HTMLInputElement | HTMLLIElement>,
+  ): void {
+    e.preventDefault();
+
+    const isActionItem =
+      (e.target as HTMLInputElement | HTMLLIElement).className === 'event-item';
 
     if (isActionItem) {
-      e.target.style.boxShadow = '0 4px 3px gray'
+      (e.target as HTMLInputElement | HTMLLIElement).style.boxShadow =
+        '0 4px 3px gray';
     }
   }
 
-  function handleDragLeave(e: React.DragEvent<HTMLInputElement> | any) {
-    e.target.style.boxShadow = 'none'
+  function handleDragLeave(e: React.DragEvent<HTMLInputElement>): void {
+    (e.target as HTMLInputElement).style.boxShadow = 'none';
   }
 
   function handleDragStart(
-    e: React.DragEvent<HTMLInputElement> | any,
-    day: any,
-    task: any,
+    e: React.DragEvent<HTMLInputElement>,
+    day?: DaysWithTasks,
+    task?: Task,
   ) {
-    setDragDay(day)
-    setDragTask(task)
+    setDragDay(day || null);
+    setDragTask(task || null);
   }
 
-  function handleDragEnd(e: React.DragEvent<HTMLInputElement> | any) {
-    e.target.style.boxShadow = 'none'
+  function handleDragEnd(e: React.DragEvent<HTMLInputElement>): void {
+    (e.target as HTMLInputElement).style.boxShadow = 'none';
   }
 
-  function handleDrop(
-    e: React.DragEvent<HTMLInputElement> | any,
-    day: any,
-    task: any,
-  ) {
-    e.preventDefault()
+  function handleDrop(e: React.DragEvent<HTMLInputElement>, task?: Task): void {
+    e.preventDefault();
 
     setDaysWithTasks(prev => {
       return prev.map(d => {
-        if (d.id !== dragDay.id) {
-          return d
+        if (d.id !== dragDay?.id) {
+          return d;
         }
 
-        const targetIndex = d.tasks.indexOf(dragTask)
-        const dropIndex = d.tasks.indexOf(task)
-        const newSort = [...d.tasks]
-        newSort.splice(targetIndex, 1)
-        newSort.splice(dropIndex + 1, 0, dragTask)
+        const newSort = [...d.tasks];
 
-        return { ...d, tasks: newSort }
-      })
-    })
+        if (task) {
+          const targetIndex = d.tasks.indexOf(dragTask as Task);
+          const dropIndex = d.tasks.indexOf(task);
+          newSort.splice(targetIndex, 1);
+          newSort.splice(dropIndex + 1, 0, dragTask as Task);
+        }
 
-    setDragDay(null)
-    setDragTask(null)
+        return { ...d, tasks: newSort };
+      });
+    });
 
-    e.target.style.boxShadow = 'none'
+    setDragDay(null);
+    setDragTask(null);
+    (e.target as HTMLInputElement).style.boxShadow = 'none';
   }
 
   function handleDropOnBoard(
-    e: React.DragEvent<HTMLLIElement> | any,
-    day: any,
-  ) {
-    day.tasks.push(dragTask)
-    const targetIdx = dragDay.tasks.indexOf(dragTask)
-    dragDay.tasks.splice(targetIdx, 1)
+    e: React.DragEvent<HTMLLIElement>,
+    day?: DaysWithTasks,
+  ): void {
+    if (dragDay) {
+      day?.tasks.push(dragTask as Task);
+      const targetIdx = dragDay?.tasks.indexOf(dragTask as Task);
+      dragDay?.tasks.splice(targetIdx, 1);
 
-    setDaysWithTasks(
-      daysWithTasks.map(d => {
-        if (d.id === day.id) return day
-        if (d.id === dragDay.id) return dragDay
-        return d
-      }),
-    )
+      setDaysWithTasks(
+        daysWithTasks.map(d => {
+          if (d.id === day?.id) return day;
+          if (d.id === dragDay?.id) return dragDay;
+          return d;
+        }),
+      );
+    }
 
-    e.target.style.boxShadow = 'none'
+    (e.target as HTMLLIElement).style.boxShadow = 'none';
   }
 
-  const currentMonth = today.format('MMMM YYYY')
+  const currentMonth = today.format('MMMM YYYY');
 
   return (
     <>
@@ -231,12 +236,12 @@ export const Calendar = ({
 
         <BoxList>
           {monthDays?.map(({ id, originalMoment }) => {
-            const normalizedDayNumber = originalMoment.format('D')
-            const slicedMonthName = originalMoment.format('MMMM').slice(0, 3)
-            const formattedDate = originalMoment.format('YYYY-MM-DD')
-            const isShowTasks = daysWithTasks.find(d => d.id === formattedDate)
-            const day = daysWithTasks.find(day => day.id === id)
-            const isFirstDayOfCurrentMonth = normalizedDayNumber === '1'
+            const normalizedDayNumber = originalMoment.format('D');
+            const slicedMonthName = originalMoment.format('MMMM').slice(0, 3);
+            const formattedDate = originalMoment.format('YYYY-MM-DD');
+            const isShowTasks = daysWithTasks.find(d => d.id === formattedDate);
+            const day = daysWithTasks.find(day => day.id === id);
+            const isFirstDayOfCurrentMonth = normalizedDayNumber === '1';
 
             return (
               <CellBox
@@ -249,8 +254,8 @@ export const Calendar = ({
               >
                 <FirstLine>
                   <DayNumber
-                    isCurrentDay={isCurrentDay(originalMoment)}
-                    isCurrentMonth={isCurrentMonth(originalMoment, today)}
+                    isCurrentDay={isSameDate(moment(), originalMoment, 'day')}
+                    isCurrentMonth={isSameDate(originalMoment, today, 'month')}
                     isFirstDay={isFirstDayOfCurrentMonth}
                   >
                     {normalizedDayNumber}{' '}
@@ -259,7 +264,7 @@ export const Calendar = ({
 
                   <button
                     onClick={() =>
-                      setIsShowColors(prev => ({
+                      setShowColors(prev => ({
                         day: formattedDate,
                         show: !prev.show,
                       }))
@@ -268,7 +273,7 @@ export const Calendar = ({
                     +
                   </button>
 
-                  {isShowColors.show && formattedDate === isShowColors.day && (
+                  {showColors.show && formattedDate === showColors.day && (
                     <ColorsList>
                       <li
                         onClick={() =>
@@ -295,25 +300,22 @@ export const Calendar = ({
                 </FirstLine>
 
                 <HolidayList>
-                  {holidays.map(holiday => {
-                    const isShowHoliday = moment(holiday.date).isSame(
-                      originalMoment,
-                      'day',
-                    )
-                    if (isShowHoliday) {
+                  {holidays
+                    .filter(h => {
+                      return isSameDate(moment(h.date), originalMoment, 'day');
+                    })
+                    .map(holiday => {
                       return (
                         <li key={`${holiday.countryCode}${nanoid(6)}`}>
                           {holiday.name}
                         </li>
-                      )
-                    }
-                    return null
-                  })}
+                      );
+                    })}
                 </HolidayList>
 
                 <TasksList>
                   {isShowTasks?.tasks.map(t => {
-                    const task = day?.tasks.find(task => task.id === t.id)
+                    const task = day?.tasks.find(task => task.id === t.id);
 
                     return (
                       <li key={t.id}>
@@ -330,7 +332,7 @@ export const Calendar = ({
                           onDragLeave={e => handleDragLeave(e)}
                           onDragStart={e => handleDragStart(e, day, task)}
                           onDragEnd={e => handleDragEnd(e)}
-                          onDrop={e => handleDrop(e, day, task)}
+                          onDrop={e => handleDrop(e, task)}
                         />
                         <button
                           onClick={() => handleDeleteTask(formattedDate, t.id)}
@@ -338,11 +340,11 @@ export const Calendar = ({
                           x
                         </button>
                       </li>
-                    )
+                    );
                   })}
                 </TasksList>
               </CellBox>
-            )
+            );
           })}
         </BoxList>
       </CalendarWrapper>
@@ -357,5 +359,5 @@ export const Calendar = ({
         </button>
       </ControlButtonBox>
     </>
-  )
-}
+  );
+};

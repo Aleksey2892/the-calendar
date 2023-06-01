@@ -1,26 +1,28 @@
-import React from 'react'
-import moment from 'moment'
-import { useCalendar } from '../../../utils/customHooks/useCalendar'
-import { Container, ControlsBox } from './CalendarHeader.styled'
+import React from 'react';
+import moment from 'moment';
+import { useCalendar } from '../../../utils/customHooks/useCalendar';
+import { Container, ControlsBox } from './CalendarHeader.styled';
 
 export const CalendarHeader = ({
   currentMonthName,
   changeMonth,
   findAction,
 }: {
-  currentMonthName: string
-  changeMonth: React.Dispatch<React.SetStateAction<moment.Moment>>
+  currentMonthName: string;
+  changeMonth: React.Dispatch<React.SetStateAction<moment.Moment>>;
   findAction: {
-    value: string
-    onChange: React.Dispatch<React.SetStateAction<string>>
-  }
+    value: string;
+    onChange: React.Dispatch<React.SetStateAction<string>>;
+  };
 }) => {
-  const { changeCalendar, isCurrentMonth } = useCalendar()
+  const { changeCalendar, isSameDate } = useCalendar();
 
-  const handleChangeCalendar = (e: any) => {
-    const actionType = e.target.getAttribute('data-action')
-    changeCalendar(actionType, changeMonth)
-  }
+  const handleChangeCalendar = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    actionType: string,
+  ): void => {
+    changeCalendar(actionType, changeMonth);
+  };
 
   return (
     <Container>
@@ -34,28 +36,19 @@ export const CalendarHeader = ({
         />
 
         <ControlsBox>
-          <button
-            type="button"
-            data-action={'prev'}
-            onClick={handleChangeCalendar}
-          >
+          <button type="button" onClick={e => handleChangeCalendar(e, 'prev')}>
             {'<'}
           </button>
 
           <button
             type="button"
-            data-action={'current'}
-            disabled={isCurrentMonth(moment(), moment(currentMonthName))}
-            onClick={handleChangeCalendar}
+            disabled={isSameDate(moment(), moment(currentMonthName), 'month')}
+            onClick={e => handleChangeCalendar(e, 'current')}
           >
             {'Current Month'}
           </button>
 
-          <button
-            type="button"
-            data-action={'next'}
-            onClick={handleChangeCalendar}
-          >
+          <button type="button" onClick={e => handleChangeCalendar(e, 'next')}>
             {'>'}
           </button>
         </ControlsBox>
@@ -71,5 +64,5 @@ export const CalendarHeader = ({
         <li>Sun</li>
       </ul>
     </Container>
-  )
-}
+  );
+};
